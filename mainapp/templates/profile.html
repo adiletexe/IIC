@@ -583,7 +583,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         // Function to fetch and display price
         function fetchPrice(symbol, priceTextId) {
-            fetch('/stockpriceapi/', {
+            fetch('https://iic.up.railway.app/stockpriceapi/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
