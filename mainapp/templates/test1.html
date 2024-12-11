@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - International Investment Competition (IIC)</title>
+    <link href="https://fonts.googleapis.com/css?family=Space+Grotesk:300,400,500,700,900&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* 
+          Best modern design:
+          - Clean, sans-serif font (Space Grotesk)
+          - Subtle gradient background
+          - Glassmorphic nav with subtle shadows
+          - Minimal, modern tables with hover effects
+          - Smooth transitions, refined spacing
+        */
+
+        body {
+            margin:0; 
+            background: linear-gradient(135deg, #EDE8F5 0%, #ADBBDa 100%);
+            font-family: 'Space Grotesk', sans-serif;
+            color: #333;
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(15px);
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 10px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .navbar a {
+            margin-right: 20px;
+            font-weight: 600;
+            color: #3D52A0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .navbar a:hover {
+            color: #7091E6;
+        }
+
+        .row-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 80px auto;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            color: #3D52A0;
+            text-align: left;
+        }
+
+        p {
+            line-height:1.6;
+            color:#333;
+        }
+
+        .user-info, .current-stocks, .buy-stock-form, .stocks-history, .leaderboard {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        .user-info h2, .current-stocks h2, .buy-stock-form h2, .stocks-history h2, .leaderboard h2 {
+            margin-top:0;
+        }
+
+        table {
+            width:100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.8);
+            overflow:hidden;
+            border-radius:8px;
+        }
+
+        table th, table td {
+            padding:15px;
+            text-align:left;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            font-size:0.95rem;
+        }
+
+        table th {
+            background:#ADBBDa;
+            color:#3D52A0;
+            font-weight:700;
+        }
+
+        table tbody tr:hover {
+            background:#F5F2FB;
+        }
+
+        /* Buy form */
+        .buy-stock-form form {
+            display:flex;
+            flex-direction: column;
+            max-width:300px;
+        }
+
+        .buy-stock-form select, .buy-stock-form input {
+            padding:10px;
+            border:1px solid #ccc;
+            border-radius:5px;
+            margin-bottom:15px;
+            font-size:0.95rem;
+        }
+
+        .buy-stock-form button {
+            padding:10px 20px;
+            border:none;
+            border-radius:20px;
+            background:#7091E6;
+            color:#fff;
+            font-weight:600;
+            cursor:pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .buy-stock-form button:hover {
+            background:#3D52A0;
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            color:#e74c3c;
+            font-size:0.9rem;
+            margin-top:5px;
+        }
+
+        .price-info {
+            margin-bottom:15px;
+        }
+
+        /* Responsive */
+        @media(max-width:768px) {
+            .navbar a {
+                margin-right:10px;
+            }
+
+            h2 {
+                font-size:1.5rem;
+            }
+            
+            table th, table td {
+                font-size:0.85rem;
+            }
+
+            .buy-stock-form form {
+                width:100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#">Profile</a>
+        <a href="#">Instructions</a>
+        <a href="#">Charts</a>
+        <a href="#">Logout</a>
+    </div>
+
+    <div class="row-container">
+        <!-- User Info -->
+        <div class="row user-info">
+            <h2>John Doe</h2>
+            <p>Email: john.doe@example.com</p>
+            <p>Balance: $100000.0000</p>
+        </div>
+
+        <!-- Current Stocks -->
+        <div class="row current-stocks">
+            <h2>Current Assets</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Quantity</th>
+                        <th>Bought price ($)</th>
+                        <th>Current price ($)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="active-stocks-body">
+                    <!-- Example Row -->
+                    <tr>
+                        <td>BTCUSDT</td>
+                        <td>15</td>
+                        <td>27514.45</td>
+                        <td id="current-price-BTCUSDT-1">Loading...</td>
+                        <td>
+                            <button style="padding:6px 12px; border:none; border-radius:20px; background:#e74c3c; color:#fff; cursor:pointer;">Sell</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>ETHUSDT</td>
+                        <td>10</td>
+                        <td>1780.00</td>
+                        <td id="current-price-ETHUSDT-2">Loading...</td>
+                        <td>
+                            <button style="padding:6px 12px; border:none; border-radius:20px; background:#e74c3c; color:#fff; cursor:pointer;">Sell</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Buy Stock Form -->
+        <div class="row buy-stock-form">
+            <form action="#" method="POST">
+                <h2>Buy Asset</h2>
+                <select name="assetsymbol" id="stock-symbol-input">
+                    <option value="BTCUSDT">BTCUSDT</option>
+                    <option value="ETCUSDT">ETCUSDT</option>
+                    <option value="LTCUSDT">LTCUSDT</option>
+                    <option value="EOSUSDT">EOSUSDT</option>
+                    <option value="XRPUSDT">XRPUSDT</option>
+                    <option value="DASHUSDT">DASHUSDT</option>
+                </select>
+                <input type="number" name="quantity" placeholder="quantity">
+                
+                <button id="get-price-button">Get / Refresh Price</button>
+                <p id="price-text" class="price-info">Price: $0.00</p>
+                <button type="submit" id="buy-button">Buy</button>
+                <div class="error-message" id="error-message"></div>
+            </form>
+        </div>
+
+        <!-- Stocks History -->
+        <div class="row stocks-history">
+            <h2>Assets History</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Quantity</th>
+                        <th>Bought price ($)</th>
+                        <th>Sold price ($)</th>
+                        <th>Profit ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>BTCUSDT</td>
+                        <td>5</td>
+                        <td>25000.00</td>
+                        <td>30000.00</td>
+                        <td>25000.00</td>
+                    </tr>
+                    <tr>
+                        <td>XRPUSDT</td>
+                        <td>500</td>
+                        <td>0.50</td>
+                        <td>0.70</td>
+                        <td>100.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="row leaderboard">
+            <h2>Leaderboard</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Group Name</th>
+                        <th>Participants</th>
+                        <th>Balance ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Team Alpha</td>
+                        <td>3</td>
+                        <td>120000.00</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>CryptoChampions</td>
+                        <td>2</td>
+                        <td>117500.00</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Invest Gurus</td>
+                        <td>4</td>
+                        <td>115900.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Mocked price fetching logic (no server)
+        // We'll just generate random prices for demonstration
+
+        function getPrice(stockSymbol, stockId) {
+            const randomPrice = (Math.random() * 30000 + 1000).toFixed(2);
+            document.getElementById("current-price-" + stockSymbol + "-" + stockId).textContent = randomPrice;
+        }
+
+        $(document).ready(function() {
+            // Initial price load for existing active stocks
+            getPrice("BTCUSDT", "1");
+            getPrice("ETHUSDT", "2");
+
+            // Refresh prices every 2 seconds
+            setInterval(function() {
+                getPrice("BTCUSDT", "1");
+                getPrice("ETHUSDT", "2");
+            }, 2000);
+        });
+
+        $("#get-price-button").click(function(event) {
+            event.preventDefault();
+            const randomPrice = (Math.random() * 30000 + 1000).toFixed(2);
+            $("#price-text").text("Price: $" + randomPrice);
+        });
+    </script>
+</body>
+</html>

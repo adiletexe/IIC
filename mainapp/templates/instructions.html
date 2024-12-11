@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Instructions - International Investment Competition (IIC)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&display=swap">
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+    * {
+        margin: 0; padding: 0; box-sizing: border-box;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+    body {
+        background: linear-gradient(135deg, #EDE8F5 0%, #ADBBDa 100%);
+        color: #3D52A0;
+        overflow-x: hidden;
+    }
+    a {
+        color: inherit; text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    a:hover {
+        color: #7091E6;
+    }
+
+    /* Navigation */
+    nav {
+        width: 90%;
+        max-width: 1200px;
+        margin: 20px auto 0 auto;
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(15px);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 10px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 20px;
+        z-index: 999;
+    }
+    nav a {
+        margin-right: 20px;
+        font-weight: 600;
+        color: #3D52A0;
+    }
+
+    .row-container {
+        width:90%;
+        max-width:1200px;
+        margin:80px auto;
+    }
+
+    h1, h2, h3 {
+        color:#3D52A0;
+    }
+
+    h1 {
+        font-size:2.5rem;
+        font-weight:900;
+        margin-bottom:20px;
+    }
+    h2 {
+        font-size:1.8rem;
+        font-weight:900;
+        margin-bottom:20px;
+    }
+    h3 {
+        font-size:1.2rem;
+        font-weight:700;
+        margin-bottom:10px;
+    }
+
+    p {
+        line-height:1.6;
+        color:#333;
+        margin-bottom:15px;
+    }
+
+    .info {
+        background: rgba(255,255,255,0.7);
+        backdrop-filter: blur(10px);
+        border-radius:10px;
+        padding:30px;
+        box-shadow:0 10px 20px rgba(0,0,0,0.05);
+        animation:fadeInUp 1s ease forwards;
+    }
+
+    table.custom-table {
+        width:100%;
+        border-collapse:collapse;
+        margin-top:20px;
+        background: rgba(255,255,255,0.8);
+        overflow:hidden;
+        border-radius:8px;
+    }
+    table.custom-table th, table.custom-table td {
+        vertical-align: top;
+        padding:20px;
+        border-bottom:1px solid rgba(0,0,0,0.05);
+    }
+    table.custom-table th {
+        background:#ADBBDa;
+        font-weight:700;
+        color:#3D52A0;
+        font-size:1.2rem;
+    }
+    table.custom-table td {
+        font-size:1rem;
+        color:#3D52A0;
+    }
+    table.custom-table tr:last-child td {
+        border-bottom:none;
+    }
+
+    .go-to-charts-button {
+        margin-top:30px;
+        padding:14px 30px;
+        border:none;
+        border-radius:30px;
+        background:#7091E6;
+        color:#fff;
+        font-weight:700;
+        font-size:1rem;
+        cursor:pointer;
+        transition:background 0.3s ease, transform 0.3s ease;
+    }
+    .go-to-charts-button:hover {
+        background:#3D52A0;
+        transform:translateY(-2px);
+    }
+
+    @keyframes fadeInUp {
+        0% {opacity:0; transform: translateY(20px);}
+        100% {opacity:1; transform:translateY(0);}
+    }
+
+    @media(max-width:768px) {
+        h1 {font-size:2rem;}
+        h2 {font-size:1.5rem;}
+        table.custom-table th, table.custom-table td {
+            padding:15px;
+        }
+    }
+</style>
+</head>
+<body>
+<nav>
+    <a href="{% url 'index' %}">Main</a>
+    <a href="{% url 'profile' %}">Profile/Trade</a>
+    <a href="{% url 'instructions' %}" style="color:#7091E6;">Instructions</a>
+    <a href="{% url 'charts' %}">Charts</a>
+    <a href="{% url 'logout' %}">Logout</a>
+</nav>
+
+<div class="row-container">
+    <div class="info">
+        <h1>Instructions for Demo Cryptocurrency Trading</h1>
+        <p><strong>Note:</strong> This is a demo version. You can only trade the following cryptocurrency pairs: BTCUSDT, ETCUSDT, LTCUSDT, EOSUSDT, XRPUSDT, and DASHUSDT.</p>
+        <p><strong>30 Days Stock Market Investment Competition</strong> will be held if certain conditions are met. Stay tuned for updates!</p>
+
+        <table class="custom-table">
+            <tr>
+                <th><h2>How to Trade</h2></th>
+                <th><h2>How to Analyze</h2></th>
+            </tr>
+            <tr>
+                <td>
+                    <h3>To use Charts</h3>
+                    <p>1. Go to "Charts" page.</p>
+                    <p>2. Click the search icon on the top-left corner in the chart widget.</p>
+                    <p>3. Type one of: BTCUSDT, ETCUSDT, LTCUSDT, EOSUSDT, XRPUSDT, DASHUSDT and press "Enter".</p>
+                    <p>4. Use the toolbar to choose Timeframe, Indicators, etc.</p>
+
+                    <h3>To Buy Assets</h3>
+                    <p>1. Go to "Profile" page.</p>
+                    <p>2. Choose a crypto, refresh price, specify quantity, and click "Buy".</p>
+                </td>
+                <td>
+                    <h3>1. Access Cryptocurrency Charts:</h3>
+                    <p>Visit the "Charts" section. Charts visualize price movements over time.</p>
+
+                    <h3>2. Use Technical Indicators:</h3>
+                    <p>Apply RSI, moving averages, MACD to find potential entry/exit points.</p>
+
+                    <h3>3. Follow Smart Money Concepts:</h3>
+                    <p>Observe unusual volumes or large orders. These can signal emerging trends.</p>
+
+                    <h3>4. Stay Informed:</h3>
+                    <p>Check reputable crypto news (CoinDesk, CryptoSlate, CoinTelegraph) for market updates.</p>
+
+                    <h3>5. Learn from Experience:</h3>
+                    <p>Review your trades—both wins and losses—to refine future strategies.</p>
+
+                    <h3>6. Explore Market Sentiment:</h3>
+                    <p>Monitor social media & forums to gauge sentiment, but verify info from reliable sources.</p>
+                </td>
+            </tr>
+        </table>
+
+        <form action="charts.html">
+            <button type="submit" class="go-to-charts-button">Go to Charts</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stock Details - IIC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&display=swap">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <style>
+        :root {
+            --gap-size: 32px;
+            --text-color: #3D52A0;
+            --bg-gradient: linear-gradient(135deg, #EDE8F5 0%, #ADBBDa 100%);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        nav {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto 0 auto;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 20px;
+            z-index: 999;
+            gap:20px;
+        }
+
+        nav a {
+            font-weight: 600;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #7091E6;
+        }
+
+        nav label {
+            font-weight:600;
+            color: var(--text-color);
+        }
+
+        nav select, nav input[type="text"] {
+            padding:5px 10px;
+            border-radius:5px;
+            border:1px solid #ccc;
+            background:#fff;
+            font-size:1rem;
+        }
+
+        nav button {
+            padding: 6px 15px;
+            border:none;
+            border-radius:20px;
+            background:#7091E6;
+            color:#fff;
+            font-weight:600;
+            cursor:pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        nav button:hover {
+            background:#3D52A0;
+            transform: translateY(-2px);
+        }
+
+        main {
+            display: grid;
+            width: 100%;
+            padding: 0 calc(var(--gap-size) * 0.5);
+            max-width: 960px;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: var(--gap-size);
+            margin-top: var(--gap-size);
+        }
+
+        /* Spans */
+        #symbol-info,
+        #advanced-chart,
+        #company-profile,
+        #fundamental-data {
+            grid-column: span 2;
+        }
+
+        #technical-analysis,
+        #top-stories,
+        #powered-by-tv {
+            grid-column: span 1;
+        }
+
+        @media (max-width: 800px) {
+            main > section,
+            #technical-analysis,
+            #top-stories,
+            #powered-by-tv {
+                grid-column: span 2;
+            }
+        }
+
+        main section {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        h1, h2 {
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        p {
+            line-height: 1.6;
+            color: #333;
+        }
+
+        #ticker-tape {
+            width: 100%;
+            margin-top: var(--gap-size);
+        }
+
+        #advanced-chart {
+            height: 500px;
+        }
+
+        #company-profile {
+            height: 390px;
+        }
+
+        #fundamental-data {
+            height: 490px;
+        }
+
+        #technical-analysis,
+        #top-stories {
+            height: 425px;
+        }
+
+        #powered-by-tv {
+            display: flex;
+            background: rgba(255,255,255,0.5);
+            border: solid 1px #e0e3eb;
+            text-align: justify;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+            padding: 16px;
+            border-radius: 6px;
+        }
+
+        #powered-by-tv p {
+            margin: 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        #powered-by-tv a {
+            color: #2962ff;
+            text-decoration: none;
+        }
+
+        #powered-by-tv a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            align-items: center;
+            background: rgba(255,255,255,0.2);
+            gap: 12px;
+            padding: var(--gap-size);
+            margin-top: var(--gap-size);
+            border-top: solid 2px rgba(0,0,0,0.1);
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 12px;
+            color: rgba(0,0,0,0.7);
+            text-align: center;
+        }
+
+        @keyframes fadeInUp {
+            0% {opacity:0; transform: translateY(20px);}
+            100% {opacity:1; transform:translateY(0);}
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="profile.html">Profile</a>
+        <a href="instructions.html">Instructions</a>
+        <a href="charts.html">Charts</a>
+        <a href="logout.html">Logout</a>
+        <label for="ticker-selector">Select Ticker: </label>
+        <select id="ticker-selector">
+            <option value="NASDAQ:AAPL" selected>Apple (AAPL)</option>
+            <option value="NASDAQ:TSLA">Tesla (TSLA)</option>
+            <option value="NASDAQ:MSFT">Microsoft (MSFT)</option>
+            <option value="NASDAQ:GOOGL">Google (GOOGL)</option>
+        </select>
+        <input type="text" id="custom-ticker-input" placeholder="Or type custom ticker (e.g. NASDAQ:AMZN)">
+        <button id="submit-ticker-btn">Submit Ticker</button>
+    </nav>
+
+    <!-- Ticker Tape Widget -->
+    <nav id="ticker-tape">
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script
+                type="text/javascript"
+                src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js"
+                async
+            >
+                {
+                    "symbols": [
+                      { "proName": "NASDAQ:TSLA", "description": "" },
+                      { "proName": "NASDAQ:AAPL", "description": "" },
+                      { "proName": "NASDAQ:NVDA", "description": "" },
+                      { "proName": "NASDAQ:MSFT", "description": "" },
+                      { "proName": "NASDAQ:AMZN", "description": "" },
+                      { "proName": "NASDAQ:GOOGL", "description": "" },
+                      { "proName": "NASDAQ:META", "description": "" },
+                      { "proName": "NYSE:BRK.B", "description": "" },
+                      { "proName": "NYSE:LLY", "description": "" },
+                      { "proName": "NYSE:UNH", "description": "" },
+                      { "proName": "NYSE:V", "description": "" },
+                      { "proName": "NYSE:WMT", "description": "" }
+                    ],
+                    "showSymbolLogo": true,
+                    "colorTheme": "light",
+                    "isTransparent": false,
+                    "displayMode": "adaptive",
+                    "locale": "en"
+                }
+            </script>
+        </div>
+        <!-- TradingView Widget END -->
+    </nav>
+
+    <main>
+        <section id="symbol-info">
+            <!-- Symbol Info Widget -->
+            <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script
+                    type="text/javascript"
+                    src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-info.js"
+                    async
+                >
+                    {
+                    "symbol": "NASDAQ:AAPL",
+                    "width": "100%",
+                    "locale": "en",
+                    "colorTheme": "light",
+                    "isTransparent": true
+                     }
+                </script>
+            </div>
+        </section>
+
+        <section id="advanced-chart">
+            <!-- Advanced Chart Widget -->
+            <div class="tradingview-widget-container" style="height:100%; width:100%;">
+                <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px); width:100%;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+                {
+                  "autosize": true,
+                  "symbol": "NASDAQ:AAPL",
+                  "interval": "D",
+                  "timezone": "Etc/UTC",
+                  "theme": "light",
+                  "style": "1",
+                  "locale": "en",
+                  "allow_symbol_change": true,
+                  "calendar": false
+                }
+                </script>
+            </div>
+        </section>
+
+        <section id="company-profile">
+            <!-- Company Profile Widget -->
+            <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script
+                    type="text/javascript"
+                    src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-profile.js"
+                    async
+                >
+                    {
+                      "width": "100%",
+                      "height": "100%",
+                      "colorTheme": "light",
+                      "isTransparent": true,
+                      "symbol": "NASDAQ:AAPL",
+                      "locale": "en"
+                    }
+                </script>
+            </div>
+        </section>
+
+        <section id="fundamental-data">
+            <!-- Fundamental Data Widget -->
+            <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script
+                    type="text/javascript"
+                    src="https://s3.tradingview.com/external-embedding/embed-widget-financials.js"
+                    async
+                >
+                      {
+                      "colorTheme": "light",
+                      "isTransparent": true,
+                      "displayMode": "adaptive",
+                      "width": "100%",
+                      "height": "100%",
+                      "symbol": "NASDAQ:AAPL",
+                      "locale": "en"
+                    }
+                </script>
+            </div>
+        </section>
+
+        <section id="technical-analysis">
+            <!-- Technical Analysis Widget -->
+            <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script
+                    type="text/javascript"
+                    src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js"
+                    async
+                >
+                    {
+                    "interval": "15m",
+                    "width": "100%",
+                    "isTransparent": true,
+                    "height": "100%",
+                    "symbol": "NASDAQ:AAPL",
+                    "showIntervalTabs": true,
+                    "displayMode": "single",
+                    "locale": "en",
+                    "colorTheme": "light"
+                    }
+                </script>
+            </div>
+        </section>
+
+        <section id="top-stories">
+            <!-- Top Stories Widget -->
+            <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script
+                    type="text/javascript"
+                    src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js"
+                    async
+                >
+                      {
+                      "feedMode": "symbol",
+                      "symbol": "NASDAQ:AAPL",
+                      "colorTheme": "light",
+                      "isTransparent": true,
+                      "displayMode": "regular",
+                      "width": "100%",
+                      "height": "100%",
+                      "locale": "en"
+                    }
+                </script>
+            </div>
+        </section>
+
+        <section id="powered-by-tv">
+            <p><strong>Powered by TradingView</strong></p>
+            <p>
+                Charts and financial information provided by TradingView. Explore
+                more advanced features at
+                <a href="https://www.tradingview.com/features/">TradingView</a> or
+                <a href="https://www.tradingview.com/widget/">grab charts</a> for your site.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>This example page integrates multiple TradingView widgets into a single interface.</p>
+        <p>
+            <a href="https://www.tradingview.com/widget-docs/tutorials/build-page/#build-a-page" target="_blank">
+                View the original TradingView tutorial
+            </a>
+        </p>
+    </footer>
+
+    <script>
+        function updateAllWidgets(selectedSymbol) {
+            // Update Symbol Info Widget
+            const symbolInfoWidget = document.querySelector('#symbol-info .tradingview-widget-container script');
+            symbolInfoWidget.textContent = `
+            {
+                "symbol": "${selectedSymbol}",
+                "width": "100%",
+                "locale": "en",
+                "colorTheme": "light",
+                "isTransparent": true
+            }`;
+
+            // Update Advanced Chart Widget
+            const advancedChartWidget = document.querySelector('#advanced-chart .tradingview-widget-container script');
+            advancedChartWidget.textContent = `
+            {
+                "autosize": true,
+                "symbol": "${selectedSymbol}",
+                "interval": "D",
+                "timezone": "Etc/UTC",
+                "theme": "light",
+                "style": "1",
+                "locale": "en",
+                "allow_symbol_change": true,
+                "calendar": false
+            }`;
+
+            // Update Company Profile Widget
+            const companyProfileWidget = document.querySelector('#company-profile .tradingview-widget-container script');
+            companyProfileWidget.textContent = `
+            {
+                "width": "100%",
+                "height": "100%",
+                "colorTheme": "light",
+                "isTransparent": true,
+                "symbol": "${selectedSymbol}",
+                "locale": "en"
+            }`;
+
+            // Update Fundamental Data Widget
+            const fundamentalDataWidget = document.querySelector('#fundamental-data .tradingview-widget-container script');
+            fundamentalDataWidget.textContent = `
+            {
+                "colorTheme": "light",
+                "isTransparent": true,
+                "displayMode": "adaptive",
+                "width": "100%",
+                "height": "100%",
+                "symbol": "${selectedSymbol}",
+                "locale": "en"
+            }`;
+
+            // Update Technical Analysis Widget
+            const technicalAnalysisWidget = document.querySelector('#technical-analysis .tradingview-widget-container script');
+            technicalAnalysisWidget.textContent = `
+            {
+                "interval": "15m",
+                "width": "100%",
+                "isTransparent": true,
+                "height": "100%",
+                "symbol": "${selectedSymbol}",
+                "showIntervalTabs": true,
+                "displayMode": "single",
+                "locale": "en",
+                "colorTheme": "light"
+            }`;
+
+            // Update Top Stories Widget
+            const topStoriesWidget = document.querySelector('#top-stories .tradingview-widget-container script');
+            topStoriesWidget.textContent = `
+            {
+                "feedMode": "symbol",
+                "symbol": "${selectedSymbol}",
+                "colorTheme": "light",
+                "isTransparent": true,
+                "displayMode": "regular",
+                "width": "100%",
+                "height": "100%",
+                "locale": "en"
+            }`;
+
+            // Reload TradingView Widgets
+            TradingView.onready(function () {
+                TradingView.widgetReload();
+            });
+        }
+
+        document.getElementById('submit-ticker-btn').addEventListener('click', function() {
+            const dropdownTicker = document.getElementById('ticker-selector').value;
+            const customTicker = document.getElementById('custom-ticker-input').value.trim();
+
+            const chosenSymbol = customTicker !== '' ? customTicker : dropdownTicker;
+            updateAllWidgets(chosenSymbol);
+        });
+    </script>
+</body>
+</html>

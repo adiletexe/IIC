@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stock Details - IIC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&display=swap">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <style>
+        :root {
+            --gap-size: 32px;
+            --text-color: #3D52A0;
+            --bg-gradient: linear-gradient(135deg, #EDE8F5 0%, #ADBBDa 100%);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        nav {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto 0 auto;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 20px;
+            z-index: 999;
+            gap:20px;
+        }
+
+        nav a {
+            font-weight: 600;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #7091E6;
+        }
+
+        nav label {
+            font-weight:600;
+            color: var(--text-color);
+        }
+
+        nav select, nav input[type="text"] {
+            padding:5px 10px;
+            border-radius:5px;
+            border:1px solid #ccc;
+            background:#fff;
+            font-size:1rem;
+        }
+
+        nav button {
+            padding: 6px 15px;
+            border:none;
+            border-radius:20px;
+            background:#7091E6;
+            color:#fff;
+            font-weight:600;
+            cursor:pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        nav button:hover {
+            background:#3D52A0;
+            transform: translateY(-2px);
+        }
+
+        main {
+            display: grid;
+            width: 100%;
+            padding: 0 calc(var(--gap-size) * 0.5);
+            max-width: 960px;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: var(--gap-size);
+            margin-top: var(--gap-size);
+        }
+
+        /* Spans */
+        #symbol-info,
+        #advanced-chart,
+        #company-profile,
+        #fundamental-data {
+            grid-column: span 2;
+        }
+
+        #technical-analysis,
+        #top-stories,
+        #powered-by-tv {
+            grid-column: span 1;
+        }
+
+        @media (max-width: 800px) {
+            main > section,
+            #technical-analysis,
+            #top-stories,
+            #powered-by-tv {
+                grid-column: span 2;
+            }
+        }
+
+        main section {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        h1, h2 {
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        p {
+            line-height: 1.6;
+            color: #333;
+        }
+
+        #ticker-tape {
+            width: 100%;
+            margin-top: var(--gap-size);
+        }
+
+        #advanced-chart {
+            height: 500px;
+        }
+
+        #company-profile {
+            height: 390px;
+        }
+
+        #fundamental-data {
+            height: 490px;
+        }
+
+        #technical-analysis,
+        #top-stories {
+            height: 425px;
+        }
+
+        #powered-by-tv {
+            display: flex;
+            background: rgba(255,255,255,0.5);
+            border: solid 1px #e0e3eb;
+            text-align: justify;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+            padding: 16px;
+            border-radius: 6px;
+        }
+
+        #powered-by-tv p {
+            margin: 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        #powered-by-tv a {
+            color: #2962ff;
+            text-decoration: none;
+        }
+
+        #powered-by-tv a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            align-items: center;
+            background: rgba(255,255,255,0.2);
+            gap: 12px;
+            padding: var(--gap-size);
+            margin-top: var(--gap-size);
+            border-top: solid 2px rgba(0,0,0,0.1);
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 12px;
+            color: rgba(0,0,0,0.7);
+            text-align: center;
+        }
+
+        @keyframes fadeInUp {
+            0% {opacity:0; transform: translateY(20px);}
+            100% {opacity:1; transform:translateY(0);}
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'index' %}">Main</a>
+        <a href="{% url 'profile' %}">Profile/Trade</a>
+        <a href="{% url 'instructions' %}">Instructions</a>
+        <a href="{% url 'charts' %}" style="color:#7091E6;">Charts</a>
+        <a href="{% url 'logout' %}">Logout</a>
+        <form method="POST">
+          {% csrf_token %}
+          <label for="ticker-selector">Select Ticker: </label>
+          <select name="ticker" id="ticker-selector">
+            <option value="NASDAQ:AAPL" {% if selected_ticker == 'NASDAQ:AAPL' %}selected{% endif %}>Apple Inc. (AAPL)</option>
+            <option value="NASDAQ:MSFT" {% if selected_ticker == 'NASDAQ:MSFT' %}selected{% endif %}>Microsoft Corporation (MSFT)</option>
+            <option value="NASDAQ:AMZN" {% if selected_ticker == 'NASDAQ:AMZN' %}selected{% endif %}>Amazon.com Inc. (AMZN)</option>
+            <option value="NASDAQ:GOOGL" {% if selected_ticker == 'NASDAQ:GOOGL' %}selected{% endif %}>Alphabet Inc. Class A (GOOGL)</option>
+            <option value="NASDAQ:GOOG" {% if selected_ticker == 'NASDAQ:GOOG' %}selected{% endif %}>Alphabet Inc. Class C (GOOG)</option>
+            <option value="NASDAQ:META" {% if selected_ticker == 'NASDAQ:META' %}selected{% endif %}>Meta Platforms Inc. (META)</option>
+            <option value="NASDAQ:NVDA" {% if selected_ticker == 'NASDAQ:NVDA' %}selected{% endif %}>NVIDIA Corporation (NVDA)</option>
+            <option value="NASDAQ:TSLA" {% if selected_ticker == 'NASDAQ:TSLA' %}selected{% endif %}>Tesla Inc. (TSLA)</option>
+            <option value="NASDAQ:PEP" {% if selected_ticker == 'NASDAQ:PEP' %}selected{% endif %}>PepsiCo Inc. (PEP)</option>
+            <option value="NASDAQ:AVGO" {% if selected_ticker == 'NASDAQ:AVGO' %}selected{% endif %}>Broadcom Inc. (AVGO)</option>
+            <option value="NASDAQ:COST" {% if selected_ticker == 'NASDAQ:COST' %}selected{% endif %}>Costco Wholesale Corporation (COST)</option>
+            <option value="NASDAQ:CSCO" {% if selected_ticker == 'NASDAQ:CSCO' %}selected{% endif %}>Cisco Systems Inc. (CSCO)</option>
+            <option value="NASDAQ:ADBE" {% if selected_ticker == 'NASDAQ:ADBE' %}selected{% endif %}>Adobe Inc. (ADBE)</option>
+            <option value="NASDAQ:TXN" {% if selected_ticker == 'NASDAQ:TXN' %}selected{% endif %}>Texas Instruments Incorporated (TXN)</option>
+            <option value="NASDAQ:QCOM" {% if selected_ticker == 'NASDAQ:QCOM' %}selected{% endif %}>QUALCOMM Incorporated (QCOM)</option>
+            <option value="NASDAQ:AMGN" {% if selected_ticker == 'NASDAQ:AMGN' %}selected{% endif %}>Amgen Inc. (AMGN)</option>
+            <option value="NASDAQ:INTC" {% if selected_ticker == 'NASDAQ:INTC' %}selected{% endif %}>Intel Corporation (INTC)</option>
+            <option value="NASDAQ:HON" {% if selected_ticker == 'NASDAQ:HON' %}selected{% endif %}>Honeywell International Inc. (HON)</option>
+            <option value="NASDAQ:AMD" {% if selected_ticker == 'NASDAQ:AMD' %}selected{% endif %}>Advanced Micro Devices Inc. (AMD)</option>
+            <option value="NASDAQ:SBUX" {% if selected_ticker == 'NASDAQ:SBUX' %}selected{% endif %}>Starbucks Corporation (SBUX)</option>
+            <option value="NASDAQ:MDLZ" {% if selected_ticker == 'NASDAQ:MDLZ' %}selected{% endif %}>Mondelez International Inc. (MDLZ)</option>
+            <option value="NASDAQ:AMAT" {% if selected_ticker == 'NASDAQ:AMAT' %}selected{% endif %}>Applied Materials Inc. (AMAT)</option>
+            <option value="NASDAQ:INTU" {% if selected_ticker == 'NASDAQ:INTU' %}selected{% endif %}>Intuit Inc. (INTU)</option>
+            <option value="NASDAQ:BKNG" {% if selected_ticker == 'NASDAQ:BKNG' %}selected{% endif %}>Booking Holdings Inc. (BKNG)</option>
+            <option value="NASDAQ:ADI" {% if selected_ticker == 'NASDAQ:ADI' %}selected{% endif %}>Analog Devices Inc. (ADI)</option>
+            <option value="NASDAQ:LRCX" {% if selected_ticker == 'NASDAQ:LRCX' %}selected{% endif %}>Lam Research Corporation (LRCX)</option>
+            <option value="NASDAQ:GILD" {% if selected_ticker == 'NASDAQ:GILD' %}selected{% endif %}>Gilead Sciences Inc. (GILD)</option>
+            <option value="NASDAQ:FISV" {% if selected_ticker == 'NASDAQ:FISV' %}selected{% endif %}>Fiserv Inc. (FISV)</option>
+            <option value="NASDAQ:ADP" {% if selected_ticker == 'NASDAQ:ADP' %}selected{% endif %}>Automatic Data Processing Inc. (ADP)</option>
+            <option value="NASDAQ:MU" {% if selected_ticker == 'NASDAQ:MU' %}selected{% endif %}>Micron Technology Inc. (MU)</option>
+            <option value="NASDAQ:ISRG" {% if selected_ticker == 'NASDAQ:ISRG' %}selected{% endif %}>Intuitive Surgical Inc. (ISRG)</option>
+            <option value="NASDAQ:REGN" {% if selected_ticker == 'NASDAQ:REGN' %}selected{% endif %}>Regeneron Pharmaceuticals Inc. (REGN)</option>
+            <option value="NASDAQ:VRTX" {% if selected_ticker == 'NASDAQ:VRTX' %}selected{% endif %}>Vertex Pharmaceuticals Incorporated (VRTX)</option>
+            <option value="NASDAQ:MRNA" {% if selected_ticker == 'NASDAQ:MRNA' %}selected{% endif %}>Moderna Inc. (MRNA)</option>
+            <option value="NASDAQ:ASML" {% if selected_ticker == 'NASDAQ:ASML' %}selected{% endif %}>ASML Holding N.V. (ASML)</option>
+            <option value="NASDAQ:LULU" {% if selected_ticker == 'NASDAQ:LULU' %}selected{% endif %}>Lululemon Athletica Inc. (LULU)</option>
+            <option value="NASDAQ:JD" {% if selected_ticker == 'NASDAQ:JD' %}selected{% endif %}>JD.com Inc. (JD)</option>
+            <option value="NASDAQ:ZM" {% if selected_ticker == 'NASDAQ:ZM' %}selected{% endif %}>Zoom Video Communications Inc. (ZM)</option>
+            <option value="NASDAQ:DOCU" {% if selected_ticker == 'NASDAQ:DOCU' %}selected{% endif %}>DocuSign Inc. (DOCU)</option>
+            <option value="NASDAQ:SNPS" {% if selected_ticker == 'NASDAQ:SNPS' %}selected{% endif %}>Synopsys Inc. (SNPS)</option>
+            <option value="NASDAQ:ILMN" {% if selected_ticker == 'NASDAQ:ILMN' %}selected{% endif %}>Illumina Inc. (ILMN)</option>
+            <option value="NASDAQ:WDAY" {% if selected_ticker == 'NASDAQ:WDAY' %}selected{% endif %}>Workday Inc. (WDAY)</option>
+            <option value="NASDAQ:NXPI" {% if selected_ticker == 'NASDAQ:NXPI' %}selected{% endif %}>NXP Semiconductors N.V. (NXPI)</option>
+            <option value="NASDAQ:MAR" {% if selected_ticker == 'NASDAQ:MAR' %}selected{% endif %}>Marriott International Inc. (MAR)</option>
+            <option value="NASDAQ:CTSH" {% if selected_ticker == 'NASDAQ:CTSH' %}selected{% endif %}>Cognizant Technology Solutions Corporation (CTSH)</option>
+            <option value="NASDAQ:EBAY" {% if selected_ticker == 'NASDAQ:EBAY' %}selected{% endif %}>eBay Inc. (EBAY)</option>
+            <option value="NASDAQ:EXC" {% if selected_ticker == 'NASDAQ:EXC' %}selected{% endif %}>Exelon Corporation (EXC)</option>
+            <option value="NASDAQ:CSX" {% if selected_ticker == 'NASDAQ:CSX' %}selected{% endif %}>CSX Corporation (CSX)</option>
+            <option value="NASDAQ:KDP" {% if selected_ticker == 'NASDAQ:KDP' %}selected{% endif %}>Keurig Dr Pepper Inc. (KDP)</option>
+            <option value="NASDAQ:ORLY" {% if selected_ticker == 'NASDAQ:ORLY' %}selected{% endif %}>O'Reilly Automotive Inc. (ORLY)</option>
+            <option value="NASDAQ:MNST" {% if selected_ticker == 'NASDAQ:MNST' %}selected{% endif %}>Monster Beverage Corporation (MNST)</option>
+            <option value="NASDAQ:CTAS" {% if selected_ticker == 'NASDAQ:CTAS' %}selected{% endif %}>Cintas Corporation (CTAS)</option>
+            <option value="NASDAQ:ROST" {% if selected_ticker == 'NASDAQ:ROST' %}selected{% endif %}>Ross Stores Inc. (ROST)</option>
+            <option value="NASDAQ:PAYX" {% if selected_ticker == 'NASDAQ:PAYX' %}selected{% endif %}>Paychex Inc. (PAYX)</option>
+            <option value="NASDAQ:PCAR" {% if selected_ticker == 'NASDAQ:PCAR' %}selected{% endif %}>PACCAR Inc. (PCAR)</option>
+            <option value="NASDAQ:SWKS" {% if selected_ticker == 'NASDAQ:SWKS' %}selected{% endif %}>Skyworks Solutions Inc. (SWKS)</option>
+            <option value="NASDAQ:MELI" {% if selected_ticker == 'NASDAQ:MELI' %}selected{% endif %}>MercadoLibre Inc. (MELI)</option>
+            <option value="NASDAQ:TEAM" {% if selected_ticker == 'NASDAQ:TEAM' %}selected{% endif %}>Atlassian Corporation Plc (TEAM)</option>
+            <option value="NASDAQ:BIDU" {% if selected_ticker == 'NASDAQ:BIDU' %}selected{% endif %}>Baidu Inc. (BIDU)</option>
+            <option value="NASDAQ:NTES" {% if selected_ticker == 'NASDAQ:NTES' %}selected{% endif %}>NetEase Inc. (NTES)</option>
+            <option value="NASDAQ:VRSK" {% if selected_ticker == 'NASDAQ:VRSK' %}selected{% endif %}>Verisk Analytics Inc. (VRSK)</option>
+            <option value="NASDAQ:CHTR" {% if selected_ticker == 'NASDAQ:CHTR' %}selected{% endif %}>Charter Communications Inc. (CHTR)</option>
+            <option value="NASDAQ:FAST" {% if selected_ticker == 'NASDAQ:FAST' %}selected{% endif %}>Fastenal Company (FAST)</option>
+            <option value="NASDAQ:DLTR" {% if selected_ticker == 'NASDAQ:DLTR' %}selected{% endif %}>Dollar Tree Inc. (DLTR)</option>
+            <option value="NASDAQ:WBA" {% if selected_ticker == 'NASDAQ:WBA' %}selected{% endif %}>Walgreens Boots Alliance Inc. (WBA)</option>
+            <option value="NASDAQ:LBTYA" {% if selected_ticker == 'NASDAQ:LBTYA' %}selected{% endif %}>Liberty Global plc (LBTYA)</option>
+            <option value="NASDAQ:LBTYK" {% if selected_ticker == 'NASDAQ:LBTYK' %}selected{% endif %}>Liberty Global plc (LBTYK)</option>
+            <option value="NASDAQ:UAL" {% if selected_ticker == 'NASDAQ:UAL' %}selected{% endif %}>United Airlines Holdings Inc. (UAL)</option>
+            <option value="NASDAQ:EXPE" {% if selected_ticker == 'NASDAQ:EXPE' %}selected{% endif %}>Expedia Group Inc. (EXPE)</option>
+            <option value="NASDAQ:IDXX" {% if selected_ticker == 'NASDAQ:IDXX' %}selected{% endif %}>IDEXX Laboratories Inc. (IDXX)</option>
+            <option value="NASDAQ:SIRI" {% if selected_ticker == 'NASDAQ:SIRI' %}selected{% endif %}>Sirius XM Holdings Inc. (SIRI)</option>
+            <option value="NASDAQ:ZBRA" {% if selected_ticker == 'NASDAQ:ZBRA' %}selected{% endif %}>Zebra Technologies Corporation (ZBRA)</option>
+            <option value="NASDAQ:ABNB" {% if selected_ticker == 'NASDAQ:ABNB' %}selected{% endif %}>Airbnb Inc. (ABNB)</option>
+            <option value="NASDAQ:CRWD" {% if selected_ticker == 'NASDAQ:CRWD' %}selected{% endif %}>CrowdStrike Holdings Inc. (CRWD)</option>
+            <option value="NASDAQ:PANW" {% if selected_ticker == 'NASDAQ:PANW' %}selected{% endif %}>Palo Alto Networks Inc. (PANW)</option>
+            <option value="NASDAQ:SPGI" {% if selected_ticker == 'NASDAQ:SPGI' %}selected{% endif %}>S&P Global Inc. (SPGI)</option>
+            <option value="NASDAQ:TSCO" {% if selected_ticker == 'NASDAQ:TSCO' %}selected{% endif %}>Tractor Supply Company (TSCO)</option>
+            <option value="NASDAQ:FICO" {% if selected_ticker == 'NASDAQ:FICO' %}selected{% endif %}>Fair Isaac Corporation (FICO)</option>
+            <option value="NASDAQ:RGEN" {% if selected_ticker == 'NASDAQ:RGEN' %}selected{% endif %}>Repligen Corporation (RGEN)</option>
+            <option value="NASDAQ:MTCH" {% if selected_ticker == 'NASDAQ:MTCH' %}selected{% endif %}>Match Group Inc. (MTCH)</option>
+          </select>
+          <button id="submit-ticker-btn">Apply Ticker</button>
+        </form>
+    </nav>
+
+    <!-- Ticker Tape Widget -->
+    <nav id="ticker-tape">
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script
+                type="text/javascript"
+                src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js"
+                async
+            >
+                {
+                    "symbols": [
+                      { "proName": "NASDAQ:TSLA", "description": "" },
+                      { "proName": "NASDAQ:AAPL", "description": "" },
+                      { "proName": "NASDAQ:NVDA", "description": "" },
+                      { "proName": "NASDAQ:MSFT", "description": "" },
+                      { "proName": "NASDAQ:AMZN", "description": "" },
+                      { "proName": "NASDAQ:GOOGL", "description": "" },
+                      { "proName": "NASDAQ:META", "description": "" },
+                      { "proName": "NYSE:BRK.B", "description": "" },
+                      { "proName": "NYSE:LLY", "description": "" },
+                      { "proName": "NYSE:UNH", "description": "" },
+                      { "proName": "NYSE:V", "description": "" },
+                      { "proName": "NYSE:WMT", "description": "" }
+                    ],
+                    "showSymbolLogo": true,
+                    "colorTheme": "light",
+                    "isTransparent": false,
+                    "displayMode": "adaptive",
+                    "locale": "en"
+                }
+            </script>
+        </div>
+        <!-- TradingView Widget END -->
+    </nav>
+
+    <main>
+        <section id="symbol-info">
+            <!-- Symbol Info Widget -->
+            <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script
+                    type="text/javascript"
+                    src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-info.js"
+                    async
+                >
+                    {
+                    "symbol": "{{ selected_ticker }}",
+                    "width": "100%",
+                    "locale": "en",
+                    "colorTheme": "light",
+                    "isTransparent": true
+                     }
+                </script>
+            </div>
+        </section>
+
+        <section id="advanced-chart">
+            <!-- Advanced Chart Widget -->
+            <div class="tradingview-widget-container" style="height:100%; width:100%;">
+                <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px); width:100%;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+                {
+                  "autosize": true,
+                  "symbol": "{{ selected_ticker }}",
+                  "interval": "D",
+                  "timezone": "Etc/UTC",
+                  "theme": "light",
+                  "style": "1",
+                  "locale": "en",
+                  "allow_symbol_change": true,
+                  "calendar": false
+                }
+                </script>
+            </div>
+        </section>
+
+        <section id="company-profile">
+            <!-- Company Profile Widget -->
+            <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script
+                    type="text/javascript"
+                    src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-profile.js"
+                    async
+                >
+                    {
+                      "width": "100%",
+                      "height": "100%",
+                      "colorTheme": "light",
+                      "isTransparent": true,
+                      "symbol": "{{ selected_ticker }}",
+                      "locale": "en"
+                    }
+                </script>
+            </div>
+        </section>
+
+        <section id="fundamental-data">
+            <!-- Fundamental Data Widget -->
+            <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script
+                    type="text/javascript"
+                    src="https://s3.tradingview.com/external-embedding/embed-widget-financials.js"
+                    async
+                >
+                      {
+                      "colorTheme": "light",
+                      "isTransparent": true,
+                      "displayMode": "adaptive",
+                      "width": "100%",
+                      "height": "100%",
+                      "symbol": "{{ selected_ticker }}",
+                      "locale": "en"
+                    }
+                </script>
+            </div>
+        </section>
+
+        <section id="technical-analysis">
+            <!-- Technical Analysis Widget -->
+            <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script
+                    type="text/javascript"
+                    src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js"
+                    async
+                >
+                    {
+                    "interval": "15m",
+                    "width": "100%",
+                    "isTransparent": true,
+                    "height": "100%",
+                    "symbol": "{{ selected_ticker }}",
+                    "showIntervalTabs": true,
+                    "displayMode": "single",
+                    "locale": "en",
+                    "colorTheme": "light"
+                    }
+                </script>
+            </div>
+        </section>
+
+        <section id="top-stories">
+            <!-- Top Stories Widget -->
+            <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script
+                    type="text/javascript"
+                    src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js"
+                    async
+                >
+                      {
+                      "feedMode": "symbol",
+                      "symbol": "{{ selected_ticker }}",
+                      "colorTheme": "light",
+                      "isTransparent": true,
+                      "displayMode": "regular",
+                      "width": "100%",
+                      "height": "100%",
+                      "locale": "en"
+                    }
+                </script>
+            </div>
+        </section>
+
+        <section id="powered-by-tv">
+            <p><strong>IIC is powered by TradingView</strong></p>
+            <p>
+                More advanced charts and financial information can be viewed TradingView.
+                <a href="https://www.tradingview.com/features/">TradingView</a>
+            </p>
+        </section>
+    </main>
+
+    <script>
+        function updateAllWidgets(selectedSymbol) {
+            // Update Symbol Info Widget
+            const symbolInfoWidget = document.querySelector('#symbol-info .tradingview-widget-container script');
+            symbolInfoWidget.textContent = `
+            {
+                "symbol": "${selectedSymbol}",
+                "width": "100%",
+                "locale": "en",
+                "colorTheme": "light",
+                "isTransparent": true
+            }`;
+
+            // Update Advanced Chart Widget
+            const advancedChartWidget = document.querySelector('#advanced-chart .tradingview-widget-container script');
+            advancedChartWidget.textContent = `
+            {
+                "autosize": true,
+                "symbol": "${selectedSymbol}",
+                "interval": "D",
+                "timezone": "Etc/UTC",
+                "theme": "light",
+                "style": "1",
+                "locale": "en",
+                "allow_symbol_change": true,
+                "calendar": false
+            }`;
+
+            // Update Company Profile Widget
+            const companyProfileWidget = document.querySelector('#company-profile .tradingview-widget-container script');
+            companyProfileWidget.textContent = `
+            {
+                "width": "100%",
+                "height": "100%",
+                "colorTheme": "light",
+                "isTransparent": true,
+                "symbol": "${selectedSymbol}",
+                "locale": "en"
+            }`;
+
+            // Update Fundamental Data Widget
+            const fundamentalDataWidget = document.querySelector('#fundamental-data .tradingview-widget-container script');
+            fundamentalDataWidget.textContent = `
+            {
+                "colorTheme": "light",
+                "isTransparent": true,
+                "displayMode": "adaptive",
+                "width": "100%",
+                "height": "100%",
+                "symbol": "${selectedSymbol}",
+                "locale": "en"
+            }`;
+
+            // Update Technical Analysis Widget
+            const technicalAnalysisWidget = document.querySelector('#technical-analysis .tradingview-widget-container script');
+            technicalAnalysisWidget.textContent = `
+            {
+                "interval": "15m",
+                "width": "100%",
+                "isTransparent": true,
+                "height": "100%",
+                "symbol": "${selectedSymbol}",
+                "showIntervalTabs": true,
+                "displayMode": "single",
+                "locale": "en",
+                "colorTheme": "light"
+            }`;
+
+            // Update Top Stories Widget
+            const topStoriesWidget = document.querySelector('#top-stories .tradingview-widget-container script');
+            topStoriesWidget.textContent = `
+            {
+                "feedMode": "symbol",
+                "symbol": "${selectedSymbol}",
+                "colorTheme": "light",
+                "isTransparent": true,
+                "displayMode": "regular",
+                "width": "100%",
+                "height": "100%",
+                "locale": "en"
+            }`;
+
+            // Reload TradingView Widgets
+            TradingView.onready(function () {
+                TradingView.widgetReload();
+            });
+        }
+
+        document.getElementById('submit-ticker-btn').addEventListener('click', function() {
+            const dropdownTicker = document.getElementById('ticker-selector').value;
+            const customTicker = document.getElementById('custom-ticker-input').value.trim();
+
+            const chosenSymbol = customTicker !== '' ? customTicker : dropdownTicker;
+            updateAllWidgets(chosenSymbol);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,622 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Profile - International Investment Competition (IIC)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&display=swap">
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+    * {
+        margin: 0; padding: 0; box-sizing: border-box;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+    body {
+        background: linear-gradient(135deg, #EDE8F5 0%, #ADBBDa 100%);
+        color: #3D52A0;
+        overflow-x: hidden;
+    }
+    a {
+        color: inherit; text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    a:hover {
+        color: #7091E6;
+    }
+
+    /* Navigation */
+    nav {
+        width: 90%;
+        max-width: 1200px;
+        margin: 20px auto 0 auto;
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(15px);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 10px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 20px;
+        z-index: 999;
+    }
+    nav a {
+        margin-right: 20px;
+        font-weight: 600;
+        color: #3D52A0;
+    }
+
+    .row-container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 80px auto;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        margin-bottom: 20px;
+        color: #3D52A0;
+    }
+
+    p {
+        line-height: 1.6;
+        color: #333;
+    }
+
+    .user-info, .current-stocks, .buy-stock-form, .stocks-history, .leaderboard {
+        background: rgba(255,255,255,0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        padding: 30px;
+        margin-bottom: 40px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: rgba(255,255,255,0.8);
+        overflow: hidden;
+        border-radius: 8px;
+    }
+
+    table th, table td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        font-size: 0.95rem;
+    }
+
+    table th {
+        background: #ADBBDa;
+        color: #3D52A0;
+        font-weight: 700;
+    }
+
+    .buy-stock-form form {
+        display: flex;
+        flex-direction: column;
+        max-width: 300px;
+    }
+
+    .buy-stock-form select, .buy-stock-form input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        font-size: 0.95rem;
+    }
+
+    .buy-stock-form button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 20px;
+        background: #7091E6;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .buy-stock-form button:hover {
+        background: #3D52A0;
+        transform: translateY(-2px);
+    }
+
+    .error-message {
+        color: #e74c3c;
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+
+    /* Forms Container */
+    .forms-container {
+        display: flex;
+        justify-content: center; /* Center the forms horizontally */
+        align-items: flex-start; /* Align forms to the top */
+        gap: 40px; /* Space between the forms */
+        margin: 40px auto; /* Center container on the page */
+        text-align: left;
+    }
+
+    /* Form Section Styling */
+    .form-section {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        width: 300px; /* Fixed width for consistency */
+    }
+
+    .form-section h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #3D52A0;
+        margin-bottom: 20px;
+    }
+
+    .form-section select,
+    .form-section input,
+    .form-section button {
+        width: 100%; /* Full width for inputs and buttons */
+        padding: 10px;
+        margin-bottom: 15px;
+        font-size: 0.95rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .form-section button {
+        background: #7091E6;
+        color: white;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .form-section button:hover {
+        background: #3D52A0;
+    }
+
+    /* Error Message Styling */
+    .error-message {
+        color: #e74c3c;
+        font-size: 0.9rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .forms-container {
+            flex-direction: column; /* Stack forms vertically */
+            align-items: center;
+            gap: 20px; /* Reduce space between forms */
+        }
+    }
+
+    
+    @media(max-width: 768px) {
+        h2 {
+            font-size: 1.5rem;
+        }
+        
+        table th, table td {
+            font-size: 0.85rem;
+        }
+
+        .buy-stock-form form {
+            width: 100%;
+        }
+    }
+</style>
+</head>
+<body>
+<nav>
+    <a href="{% url 'index' %}">Main</a>
+    <a href="{% url 'profile' %}" style="color:#7091E6;">Profile/Trade</a>
+    <a href="{% url 'instructions' %}">Instructions</a>
+    <a href="{% url 'charts' %}">Charts</a>
+    <a href="{% url 'logout' %}">Logout</a>
+</nav>
+
+<div class="row-container">
+    <div class="user-info">
+        <h2>{{ userprofile.name }}</h2>
+        <p>Email: {{ userprofile.email }}</p>
+        <p>Balance: ${{ userprofile.balance|floatformat:4 }}</p>
+    </div>
+
+    <div class="current-stocks">
+        <h2>Current Assets</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Asset</th>
+                    <th>Quantity</th>
+                    <th>Bought Price ($)</th>
+                    <th>Current Price ($)</th>
+                    <th>Refresh Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stock in active_user_stocks %}
+                    <tr>
+                        <td>{{ stock.title }}</td>
+                        <td>{{ stock.quantity }}</td>
+                        <td>{{ stock.bought_price }}</td>
+                        <td id="current-price-{{ stock.id }}">Refresh to see -></td>
+                        <td>
+                            <button class="refresh-price-button" style="padding:6px 12px; border:none; border-radius:20px; background:#3ce778; color:#fff; cursor:pointer;" data-stock="{{ stock.title }}" data-id="{{ stock.id }}">
+                                Refresh Price
+                            </button>
+                        </td>
+                        <td>
+                            <form action="{% url 'sell' stock.id %}" method="post">
+                                {% csrf_token %}
+                                <button style="padding:6px 12px; border:none; border-radius:20px; background:#e74c3c; color:#fff; cursor:pointer;" type="submit">Sell</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="forms-container">
+        <!-- Form 1 -->
+        <div class="form-section">
+            <form action="{% url 'profile' %}" method="POST">
+                {% csrf_token %}
+                <h2>Buy Asset</h2>
+                <select name="assetsymbol" id="asset-symbol">
+                    <option value="AAPL">Apple Inc. (AAPL)</option>
+                    <option value="MSFT">Microsoft Corporation (MSFT)</option>
+                    <option value="AMZN">Amazon.com Inc. (AMZN)</option>
+                    <option value="GOOGL">Alphabet Inc. Class A (GOOGL)</option>
+                    <option value="GOOG">Alphabet Inc. Class C (GOOG)</option>
+                    <option value="META">Meta Platforms Inc. (META)</option>
+                    <option value="NVDA">NVIDIA Corporation (NVDA)</option>
+                    <option value="TSLA">Tesla Inc. (TSLA)</option>
+                    <option value="PEP">PepsiCo Inc. (PEP)</option>
+                    <option value="AVGO">Broadcom Inc. (AVGO)</option>
+                    <option value="COST">Costco Wholesale Corporation (COST)</option>
+                    <option value="CSCO">Cisco Systems Inc. (CSCO)</option>
+                    <option value="ADBE">Adobe Inc. (ADBE)</option>
+                    <option value="TXN">Texas Instruments Incorporated (TXN)</option>
+                    <option value="QCOM">QUALCOMM Incorporated (QCOM)</option>
+                    <option value="AMGN">Amgen Inc. (AMGN)</option>
+                    <option value="INTC">Intel Corporation (INTC)</option>
+                    <option value="HON">Honeywell International Inc. (HON)</option>
+                    <option value="AMD">Advanced Micro Devices Inc. (AMD)</option>
+                    <option value="SBUX">Starbucks Corporation (SBUX)</option>
+                    <option value="MDLZ">Mondelez International Inc. (MDLZ)</option>
+                    <option value="AMAT">Applied Materials Inc. (AMAT)</option>
+                    <option value="INTU">Intuit Inc. (INTU)</option>
+                    <option value="BKNG">Booking Holdings Inc. (BKNG)</option>
+                    <option value="ADI">Analog Devices Inc. (ADI)</option>
+                    <option value="LRCX">Lam Research Corporation (LRCX)</option>
+                    <option value="GILD">Gilead Sciences Inc. (GILD)</option>
+                    <option value="FISV">Fiserv Inc. (FISV)</option>
+                    <option value="ADP">Automatic Data Processing Inc. (ADP)</option>
+                    <option value="MU">Micron Technology Inc. (MU)</option>
+                    <option value="ISRG">Intuitive Surgical Inc. (ISRG)</option>
+                    <option value="REGN">Regeneron Pharmaceuticals Inc. (REGN)</option>
+                    <option value="VRTX">Vertex Pharmaceuticals Incorporated (VRTX)</option>
+                    <option value="MRNA">Moderna Inc. (MRNA)</option>
+                    <option value="ASML">ASML Holding N.V. (ASML)</option>
+                    <option value="LULU">Lululemon Athletica Inc. (LULU)</option>
+                    <option value="JD">JD.com Inc. (JD)</option>
+                    <option value="ZM">Zoom Video Communications Inc. (ZM)</option>
+                    <option value="DOCU">DocuSign Inc. (DOCU)</option>
+                    <option value="SNPS">Synopsys Inc. (SNPS)</option>
+                    <option value="ILMN">Illumina Inc. (ILMN)</option>
+                    <option value="WDAY">Workday Inc. (WDAY)</option>
+                    <option value="NXPI">NXP Semiconductors N.V. (NXPI)</option>
+                    <option value="MAR">Marriott International Inc. (MAR)</option>
+                    <option value="CTSH">Cognizant Technology Solutions Corporation (CTSH)</option>
+                    <option value="EBAY">eBay Inc. (EBAY)</option>
+                    <option value="EXC">Exelon Corporation (EXC)</option>
+                    <option value="CSX">CSX Corporation (CSX)</option>
+                    <option value="KDP">Keurig Dr Pepper Inc. (KDP)</option>
+                    <option value="ORLY">O'Reilly Automotive Inc. (ORLY)</option>
+                    <option value="MNST">Monster Beverage Corporation (MNST)</option>
+                    <option value="CTAS">Cintas Corporation (CTAS)</option>
+                    <option value="ROST">Ross Stores Inc. (ROST)</option>
+                    <option value="PAYX">Paychex Inc. (PAYX)</option>
+                    <option value="PCAR">PACCAR Inc. (PCAR)</option>
+                    <option value="SWKS">Skyworks Solutions Inc. (SWKS)</option>
+                    <option value="MELI">MercadoLibre Inc. (MELI)</option>
+                    <option value="TEAM">Atlassian Corporation Plc (TEAM)</option>
+                    <option value="BIDU">Baidu Inc. (BIDU)</option>
+                    <option value="NTES">NetEase Inc. (NTES)</option>
+                    <option value="VRSK">Verisk Analytics Inc. (VRSK)</option>
+                    <option value="CHTR">Charter Communications Inc. (CHTR)</option>
+                    <option value="FAST">Fastenal Company (FAST)</option>
+                    <option value="DLTR">Dollar Tree Inc. (DLTR)</option>
+                    <option value="WBA">Walgreens Boots Alliance Inc. (WBA)</option>
+                    <option value="LBTYA">Liberty Global plc (LBTYA)</option>
+                    <option value="LBTYK">Liberty Global plc (LBTYK)</option>
+                    <option value="UAL">United Airlines Holdings Inc. (UAL)</option>
+                    <option value="EXPE">Expedia Group Inc. (EXPE)</option>
+                    <option value="IDXX">IDEXX Laboratories Inc. (IDXX)</option>
+                    <option value="SIRI">Sirius XM Holdings Inc. (SIRI)</option>
+                    <option value="ZBRA">Zebra Technologies Corporation (ZBRA)</option>
+                    <option value="ABNB">Airbnb Inc. (ABNB)</option>
+                    <option value="CRWD">CrowdStrike Holdings Inc. (CRWD)</option>
+                    <option value="PANW">Palo Alto Networks Inc. (PANW)</option>
+                    <option value="SPGI">S&P Global Inc. (SPGI)</option>
+                    <option value="TSCO">Tractor Supply Company (TSCO)</option>
+                    <option value="FICO">Fair Isaac Corporation (FICO)</option>
+                    <option value="RGEN">Repligen Corporation (RGEN)</option>
+                    <option value="EPAM">EPAM Systems Inc. (EPAM)</option>
+                    <option value="MTCH">Match Group Inc. (MTCH)</option>
+                </select>                
+                <input type="number" name="quantity" placeholder="Quantity" required>
+                <button type="button" id="get-price-button">Get/Refresh Price</button>
+                <p id="price-text">Price: $0.00</p>
+                <button type="submit">Buy</button>
+                <div class="error-message">{{ error }}</div>
+            </form>
+        </div>
+    
+        <!-- Form 2 -->
+        <div class="form-section">
+            <form action="{% url 'profile' %}" method="POST">
+                {% csrf_token %}
+                <h2>Buy Crypto</h2>
+                <select name="crypto-symbol" id="crypto-symbol">
+                    <option value="BTCUSDT">BTCUSDT</option>
+                    <option value="ETHUSDT">ETHUSDT</option>
+                    <option value="BNBUSDT">BNBUSDT</option>
+                    <option value="ADAUSDT">ADAUSDT</option>
+                    <option value="SOLUSDT">SOLUSDT</option>
+                    <option value="XRPUSDT">XRPUSDT</option>
+                    <option value="DOTUSDT">DOTUSDT</option>
+                    <option value="DOGEUSDT">DOGEUSDT</option>
+                    <option value="SHIBUSDT">SHIBUSDT</option>
+                    <option value="MATICUSDT">MATICUSDT</option>
+                    <option value="AVAXUSDT">AVAXUSDT</option>
+                    <option value="LTCUSDT">LTCUSDT</option>
+                    <option value="UNIUSDT">UNIUSDT</option>
+                    <option value="LINKUSDT">LINKUSDT</option>
+                    <option value="BCHUSDT">BCHUSDT</option>
+                    <option value="ALGOUSDT">ALGOUSDT</option>
+                    <option value="XLMUSDT">XLMUSDT</option>
+                    <option value="ATOMUSDT">ATOMUSDT</option>
+                    <option value="ETCUSDT">ETCUSDT</option>
+                    <option value="NEARUSDT">NEARUSDT</option>
+                    <option value="VETUSDT">VETUSDT</option>
+                    <option value="FILUSDT">FILUSDT</option>
+                    <option value="ICPUSDT">ICPUSDT</option>
+                    <option value="TRXUSDT">TRXUSDT</option>
+                    <option value="MANAUSDT">MANAUSDT</option>
+                    <option value="AXSUSDT">AXSUSDT</option>
+                    <option value="FTTUSDT">FTTUSDT</option>
+                    <option value="GRTUSDT">GRTUSDT</option>
+                    <option value="XTZUSDT">XTZUSDT</option>
+                    <option value="SANDUSDT">SANDUSDT</option>
+                    <option value="EOSUSDT">EOSUSDT</option>
+                    <option value="THETAUSDT">THETAUSDT</option>
+                    <option value="AAVEUSDT">AAVEUSDT</option>
+                    <option value="KSMUSDT">KSMUSDT</option>
+                    <option value="CAKEUSDT">CAKEUSDT</option>
+                    <option value="EGLDUSDT">EGLDUSDT</option>
+                    <option value="HNTUSDT">HNTUSDT</option>
+                    <option value="ONEUSDT">ONEUSDT</option>
+                    <option value="ZILUSDT">ZILUSDT</option>
+                    <option value="ENJUSDT">ENJUSDT</option>
+                    <option value="STXUSDT">STXUSDT</option>
+                    <option value="FLOWUSDT">FLOWUSDT</option>
+                    <option value="CHZUSDT">CHZUSDT</option>
+                    <option value="ANKRUSDT">ANKRUSDT</option>
+                    <option value="CRVUSDT">CRVUSDT</option>
+                    <option value="XMRUSDT">XMRUSDT</option>
+                    <option value="DASHUSDT">DASHUSDT</option>
+                    <option value="COMPUSDT">COMPUSDT</option>
+                    <option value="YFIUSDT">YFIUSDT</option>
+                    <option value="BATUSDT">BATUSDT</option>
+                    <option value="ZRXUSDT">ZRXUSDT</option>
+                    <option value="OMGUSDT">OMGUSDT</option>
+                    <option value="RVNUSDT">RVNUSDT</option>
+                    <option value="KAVAUSDT">KAVAUSDT</option>
+                    <option value="SNXUSDT">SNXUSDT</option>
+                    <option value="DYDXUSDT">DYDXUSDT</option>
+                    <option value="SKLUSDT">SKLUSDT</option>
+                    <option value="LRCUSDT">LRCUSDT</option>
+                    <option value="MTLUSDT">MTLUSDT</option>
+                    <option value="COTIUSDT">COTIUSDT</option>
+                    <option value="ARUSDT">ARUSDT</option>
+                    <option value="SRMUSDT">SRMUSDT</option>
+                    <option value="KNCUSDT">KNCUSDT</option>
+                    <option value="GALAUSDT">GALAUSDT</option>
+                    <option value="RENUSDT">RENUSDT</option>
+                    <option value="STORJUSDT">STORJUSDT</option>
+                    <option value="BANDUSDT">BANDUSDT</option>
+                    <option value="CTSIUSDT">CTSIUSDT</option>
+                    <option value="SXPUSDT">SXPUSDT</option>
+                    <option value="ALICEUSDT">ALICEUSDT</option>
+                    <option value="RAYUSDT">RAYUSDT</option>
+                    <option value="WAVESUSDT">WAVESUSDT</option>
+                    <option value="CELOUSDT">CELOUSDT</option>
+                    <option value="CVCUSDT">CVCUSDT</option>
+                    <option value="BALUSDT">BALUSDT</option>
+                    <option value="FTMUSDT">FTMUSDT</option>
+                    <option value="HOTUSDT">HOTUSDT</option>
+                    <option value="GLMRUSDT">GLMRUSDT</option>
+                    <option value="LUNAUSDT">LUNAUSDT</option>
+                    <option value="USTCUSDT">USTCUSDT</option>
+                    <option value="QNTUSDT">QNTUSDT</option>
+                    <option value="NKNUSDT">NKNUSDT</option>
+                    <option value="OCEANUSDT">OCEANUSDT</option>
+                    <option value="ICXUSDT">ICXUSDT</option>
+                    <option value="TWTUSDT">TWTUSDT</option>
+                    <option value="SCRTUSDT">SCRTUSDT</option>
+                    <option value="GNOUSDT">GNOUSDT</option>
+                    <option value="MOVRUSDT">MOVRUSDT</option>
+                    <option value="CTKUSDT">CTKUSDT</option>
+                    <option value="AKROUSDT">AKROUSDT</option>
+                    <option value="ELFUSDT">ELFUSDT</option>
+                    <option value="KEEPUSDT">KEEPUSDT</option>
+                    <option value="NUUSDT">NUUSDT</option>
+                    <option value="ROSEUSDT">ROSEUSDT</option>
+                    <option value="INJUSDT">INJUSDT</option>
+                    <option value="RUNEUSDT">RUNEUSDT</option>
+                    <option value="TRIBEUSDT">TRIBEUSDT</option>
+                    <option value="PLAUSDT">PLAUSDT</option>
+                </select>
+                <input type="number" name="quantity" placeholder="Quantity to Sell" required>
+                <button type="button" id="get-crypto-price-button">Get/Refresh Price</button>
+                <p id="crypto-price-text">Price: $0.00</p>
+                <button type="submit">Buy</button>
+                <div class="error-message">{{ error }}</div>
+            </form>
+        </div>
+    </div>
+    
+
+    <div class="stocks-history">
+        <h2>Assets History</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Asset</th>
+                    <th>Quantity</th>
+                    <th>Bought Price ($)</th>
+                    <th>Sold Price ($)</th>
+                    <th>Profit ($)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stock in history_user_stocks reversed %}
+                    <tr>
+                        <td>{{ stock.title }}</td>
+                        <td>{{ stock.quantity }}</td>
+                        <td>{{ stock.bought_price }}</td>
+                        <td>{{ stock.sold_price }}</td>
+                        <td style="color: {% if stock.profit > 0 %}green{% elif stock.profit < 0 %}red{% else %}black{% endif %};">
+                            {{ stock.profit }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="leaderboard">
+        <h2>Leaderboard</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Group Name</th>
+                    <th>Participants</th>
+                    <th>Balance ($)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for userprofile in userprofiles %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ userprofile.name }}</td>
+                        <td>{{ userprofile.participants }}</td>
+                        <td>{{ userprofile.balance }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function getPrice(stockSymbol, stockId) {
+        $.ajax({
+            type: "POST",
+            url: "/stockpriceapi/",
+            data: {
+                'stock': stockSymbol,
+            },
+            success: function(data) {
+                $("#current-price-" + stockSymbol + "-" + stockId).text(data.price);
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        // Handle "Refresh Price" button click
+        $(".refresh-price-button").click(function () {
+            var stockSymbol = $(this).data("stock");
+            var stockId = $(this).data("id");
+
+            $.ajax({
+                type: "POST",
+                url: "/stockpriceapi/",
+                data: {
+                    'stock': stockSymbol,
+                    'csrfmiddlewaretoken': $("input[name='csrfmiddlewaretoken']").val(),
+                },
+                success: function (data) {
+                    if (data.price) {
+                        $("#current-price-" + stockId).text(data.price);
+                    } else {
+                        $("#current-price-" + stockId).text("Error");
+                    }
+                },
+                error: function (xhr) {
+                    console.error(xhr.responseText);
+                    $("#current-price-" + stockId).text("Error");
+                },
+            });
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        // Function to fetch and display price
+        function fetchPrice(symbol, priceTextId) {
+            fetch('/stockpriceapi/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': document.querySelector('input[name="csrfmiddlewaretoken"]').value,
+                },
+                body: new URLSearchParams({ stock: symbol }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.price) {
+                    document.getElementById(priceTextId).textContent = `Price: $${data.price.toFixed(2)}`;
+                } else {
+                    document.getElementById(priceTextId).textContent = "Error fetching price";
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching price:', error);
+                document.getElementById(priceTextId).textContent = "Error fetching price";
+            });
+        }
+
+        // Event listener for the "Get/Refresh Price" button (Assets)
+        document.getElementById("get-price-button").addEventListener("click", function () {
+            const symbol = document.getElementById("asset-symbol").value;
+            fetchPrice(symbol, "price-text");
+        });
+
+        // Event listener for the "Get/Refresh Price" button (Crypto)
+        document.getElementById("get-crypto-price-button").addEventListener("click", function () {
+            const symbol = document.getElementById("crypto-symbol").value;
+            fetchPrice(symbol, "crypto-price-text");
+        });
+    });
+</script>
+</body>
+</html>

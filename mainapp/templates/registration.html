@@ -1,0 +1,35 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <title>Login Page</title>
+</head>
+<body>
+    <div class="row-container">
+        <div class="row user-info">
+            <h2>Create an Account</h2>
+            <div class="buy-stock-form">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="text" id="username" name="username" placeholder="Email" required>
+                    <input type="text" id="name" name="name" placeholder="Username or Group name" required>
+                    <select id="is-group" name="is_group">
+                        <option value="solo">Solo</option>
+                        <option value="group">Group</option>
+                    </select>
+                    <input type="text" id="participants" name="participants" placeholder="Participant(s), class" required>
+                    <input type="password" id="password1" name="password1" placeholder="Password" required>
+                    <input type="password" id="password2" name="password2" placeholder="Confirm Password" required>
+                    <button type="submit" id="buy-button">Register</button>
+                </form>
+                <div class="error-message">{{ error }}</div>
+            </div>
+            <p>Already have an account? <a href="{% url 'login' %}">Login here!</a></p>
+        </div>
+    </div>
+</body>
+</html>
