@@ -135,4 +135,4 @@ MEDIA_ROOT = BASE_DIR / 'static/mainapp/images'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CSRF_TRUSTED_ORIGINS = ['https://voteforadilet.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://iic.up.railway.app/']
